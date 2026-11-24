@@ -16,7 +16,14 @@ Use the included synthetic example to verify the scoring path.
 python score_pairs.py --input examples/pair_endpoints.synthetic.jsonl.gz --expected examples/pair_scores.synthetic.csv --output scores.csv
 ```
 
-For the paper comparison, supply the separately distributed Core100 endpoint file. The scorer reproduces pair metrics from those judgments. It does not infer event labels from pixels or compute NearAcc and FarAcc. For the registration, media validation, and scoring command options, run `physedit boundary --help`.
+For the paper comparison, download the frozen judgments and expected scores from the [PhysResponse dataset](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse). Install the Hub CLI with `python -m pip install huggingface_hub`. If the dataset requires authentication, run `hf auth login` with an authorized account. For reproducibility, pass the dataset release commit SHA to `--revision`.
+
+```sh
+hf download SunYat-senUniversity/PhysResponse core100/evaluation/pair_endpoints.jsonl.gz core100/evaluation/expected_pair_scores.csv --repo-type dataset --local-dir evaluation-data
+python score_pairs.py --input evaluation-data/core100/evaluation/pair_endpoints.jsonl.gz --expected evaluation-data/core100/evaluation/expected_pair_scores.csv --output scores.csv
+```
+
+The dataset indexes use `standard` for the Standard prompt format. The scorer reproduces pair metrics from those judgments. It does not infer event labels from pixels or compute NearAcc and FarAcc. For the registration, media validation, and scoring command options, run `physedit boundary --help`.
 
 ## Parameter inversion
 
