@@ -1,0 +1,95 @@
+cff-version: 1.2.0
+message: "If you use PhysResponse, please cite the paper below."
+title: "PhysResponse: Probing the Physics of Video Generation with Controlled Interventions"
+type: software
+authors:
+  - family-names: Li
+    given-names: Yuhan
+  - family-names: Zhang
+    given-names: Shuran
+  - family-names: Tian
+    given-names: Haixin
+  - family-names: Rao
+    given-names: Baonuo
+  - family-names: Li
+    given-names: Weipeng
+  - family-names: Hou
+    given-names: Yujia
+  - family-names: Wang
+    given-names: Zhenyu
+  - family-names: Wang
+    given-names: Zijun
+  - family-names: Lin
+    given-names: Luoyang
+  - family-names: Luo
+    given-names: Lijing
+  - family-names: Huang
+    given-names: Jiehui
+  - family-names: Yang
+    given-names: Kaiyuan
+  - family-names: Tan
+    given-names: Jingbin
+  - family-names: Hu
+    given-names: Panwen
+  - family-names: Liang
+    given-names: Xiaodan
+repository-code: "https://github.com/aliensco/PhysResponse"
+url: "https://arxiv.org/abs/2611.24419"
+license: MIT
+year: 2026
+abstract: >-
+  Video generation models are increasingly viewed as world simulators, which
+  requires not only plausible motion but dynamics that respond correctly to
+  specified physical parameters. We introduce PhysResponse, a benchmark that
+  measures this physical parameter responsiveness at two levels:
+  scene-conditioned simulator inversion recovers the effective gravity,
+  friction and initial speed of generated motion, and event evaluation tests
+  outcomes near and across critical transitions. PhysResponse also provides
+  72,000 simulated videos of 20 multi-object interaction types with controlled
+  parameters. Evaluated on ten image-to-video models, even the lowest parameter
+  errors exceed those of physically correct videos by over an order of
+  magnitude, and this failure is invisible to PSNR and SSIM.
+keywords:
+  - video generation
+  - world models
+  - physical reasoning
+  - benchmark
+  - dataset
+  - simulator inversion
+preferred-citation:
+  type: article
+  title: "PhysResponse: Probing the Physics of Video Generation with Controlled Interventions"
+  authors:
+    - family-names: Li
+      given-names: Yuhan
+    - family-names: Zhang
+      given-names: Shuran
+    - family-names: Tian
+      given-names: Haixin
+    - family-names: Rao
+      given-names: Baonuo
+    - family-names: Li
+      given-names: Weipeng
+    - family-names: Hou
+      given-names: Yujia
+    - family-names: Wang
+      given-names: Zhenyu
+    - family-names: Wang
+      given-names: Zijun
+    - family-names: Lin
+      given-names: Luoyang
+    - family-names: Luo
+      given-names: Lijing
+    - family-names: Huang
+      given-names: Jiehui
+    - family-names: Yang
+      given-names: Kaiyuan
+    - family-names: Tan
+      given-names: Jingbin
+    - family-names: Hu
+      given-names: Panwen
+    - family-names: Liang
+      given-names: Xiaodan
+  year: 2026
+  journal: "arXiv preprint arXiv:2611.24419"
+  url: "https://arxiv.org/abs/2611.24419"

@@ -1,0 +1,4 @@
+model,prompt,metric,numerator,denominator,roster_pairs,score_pct
+synthetic,medium,PairAcc,8,16,51,50
+synthetic,medium,Coverage,16,51,51,31.372549019607842
+synthetic,medium,VPSR,8,51,51,15.686274509803921

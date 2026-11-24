@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "physedit"
+version = "0.1.0"
+description = "Physical video generation and evaluation with single-view motion parameter estimation"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy", "scipy", "opencv-python-headless", "scikit-image==0.24.0", "sentencepiece>=0.2.0"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+judge = ["transformers>=4.51.3", "accelerate", "pillow", "torch", "torchvision"]
+wan-multi = ["torch>=2.6", "transformers>=4.52", "safetensors>=0.5", "ftfy>=6", "imageio-ffmpeg>=0.6", "Pillow"]
+
+[project.scripts]
+physedit = "physedit.__main__:main"
+gravtrace = "gravtrace.__main__:main"
+
+[tool.setuptools]
+packages = ["gravtrace", "physedit", "physedit.runners", "physedit.runners.wan_multi_numeric", "physedit.conditioned_models", "scripts", "physprobe", "physprobe.inversion"]
+
+[tool.setuptools.package-data]
+scripts = ["sam31_frozen/*.py", "sam31_frozen/manifest.json"]
+physedit = ["qwen_prompt.json", "core100.json", "prompt_tokenizers/*.json", "prompt_tokenizers/*.md"]
+"physedit.conditioned_models" = ["registry.json"]
+"physprobe.inversion" = ["server/sam_tracker.py"]
+
+[tool.setuptools.data-files]
+"share/physedit" = ["docs/phyediting/gravity100.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

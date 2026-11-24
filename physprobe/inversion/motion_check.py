@@ -1,0 +1,148 @@
+"""Does anything move? For each generated result, the observed motion of each evaluated object (largest change of any box
+edge from the condition frame, 3-frame median filter against single-frame SAM glitches) inside the predictability window,
+next to the motion the simulation at the PROMPTED value shows in the same window (scaled into the video's pixels).
+A 'not explained' result where no evaluated object moves more than STATIC_PX while the prompted scene moves at least
+SHOULD_PX is a 'static' failure: the prompted event never happens. The rest are videos whose objects move, but in a way no
+parameter value explains; they are split by observed / simulated motion: hardly moves (< 0.25), moves too little
+(0.25-0.67), similar amount (0.67-1.5), moves too much (> 1.5). Also the motion onsets (first motion > STATIC_PX) of both, and (F109, 2026-11-10) the motion of the simulation at the best value,
+max_best_px: a reading fitted by a simulation that hardly moves, to a video that hardly moves, while the prompted scene does move,
+says only that nothing happened (T06: still books read g = 1.47 whatever the prompt).
+Same clock and windows as evaluator.evaluate (realtime for generated, reference for synthetic).
+Usage: python motion_check.py NAME TRACKS.jsonl [--items SET] [--clock realtime|reference] [--workers 24] [--with-truth]
+  -> results_gen/<NAME>_motion.jsonl and a summary (per model, per task family) on stdout"""
+import argparse, collections, json, math
+from multiprocessing import get_context
+import numpy as np
+import evaluator as ev
+
+STATIC_PX, SHOULD_PX = 3.0, 10.0
+# D67 (2026-10-30): the observation-to-simulation frame map was inverted, s = 4 + (k - kc) dt / DT; the evaluator uses
+# s = 4 + (k - kc) DT / dt (DT = physical seconds per video frame, dt = per simulation frame). With DT != dt the observed window was
+# (DT / dt)^2 times too long (16 fps: 3.5x). Default 'fixed' = the evaluator's map (official since 2026-10-30, review session);
+# PHYSPROBE_MOTION_WINDOW=inverted reproduces the earlier motion records.
+WINDOW = __import__('os').environ.get('PHYSPROBE_MOTION_WINDOW', 'fixed')
+assert WINDOW in ('fixed', 'inverted', 'official'), WINDOW   # 'official': old name of 'inverted'
+# PHYSPROBE_MOTION_SIM_TO_VIDEO=1: the simulated motion is taken only up to the simulation frame of the video's last tracked frame,
+# so a video shorter than the predictability window (e.g. 49 frames at 24 fps, 2 s) is not called static for motion the
+# simulation shows after the video has ended. Default off (the official records); no effect when the video covers the window.
+SIM_TO_VIDEO = __import__('os').environ.get('PHYSPROBE_MOTION_SIM_TO_VIDEO', '0') == '1'
+ap = argparse.ArgumentParser(); ap.add_argument('name'); ap.add_argument('tracks'); ap.add_argument('--items', default='all')
+ap.add_argument('--clock', choices=['realtime', 'reference'], default='realtime'); ap.add_argument('--workers', type=int, default=24)
+ap.add_argument('--with-truth', action='store_true')
+a = ap.parse_args()
+items = {x['key']: x for x in json.load(open(ev.B / 'sam_gen' / a.items / 'items.json'))['items'] if x.get('map')}
+R = [json.loads(l) for l in open(ev.B / 'results_gen' / f'{a.name}.jsonl')]
+R = [r for r in R if 'param' in r and r['key'] in items]
+OBS = collections.defaultdict(dict); KC = {}
+for line in open(a.tracks):
+    r = json.loads(line); vid, n = r['id'].split('__', 1)
+    if vid not in items: continue
+    tr = r['tracks'][n]
+    OBS[vid][n] = (np.array(tr['frames']), np.array([b if b is not None else [np.nan] * 4 for b in tr['xyxy']], float)); KC[vid] = r.get('prompt_frame', 0)
+by_clip = collections.defaultdict(list)
+for r in R: by_clip[r['clip']].append(r)
+
+
+def medfilt3(x):
+    y = x.copy()
+    for i in range(1, len(x) - 1): y[i] = np.nanmedian(x[i - 1:i + 2], axis=0)
+    return y
+
+
+def run_clip(clip):
+    if 'objects' not in ev.HZ.get(clip, {}): return []   # a clip the horizons leave out (T09_C05: status only) has no window to look in
+    dt, _ = ev.clock(clip); hz = ev.HZ[clip]['objects']; out = []; libs = {}
+    for r in by_clip[clip]:
+        p = r['param']
+        if p not in libs: libs[p] = ev.library(clip, p, with_truth=a.with_truth, workers=1)
+        lib = libs[p]; truth = ev.truth_of(clip, p)
+        if not lib: continue
+        _, boxes = min(lib, key=lambda t: abs(math.log(t[0] / truth)))
+        bbx = min(lib, key=lambda t: abs(math.log(t[0] / r['best'])))[1] if r.get('best') else None   # F109: the simulation at the best value
+        x = items[r['key']]; m = x['cam_to_video']; DT = ev.generated_dt(clip, x['fps'], a.clock); kc = KC.get(r['key'], 0); cf = x.get('condition_frame_index', 4)   # simulation frame shown by the condition frame
+        sa = np.array([m['scale'][0], m['scale'][1]] * 2); sb_ = np.array([m['offset'][0], m['offset'][1]] * 2)
+        per = {}
+        for n in ev.usable(clip):
+            if n not in OBS.get(r['key'], {}) or n not in boxes: continue
+            k, ob = OBS[r['key']][n]
+            if kc not in set(k.tolist()): continue
+            i0 = int(np.where(k == kc)[0][0])
+            if np.isnan(ob[i0, 0]): continue
+            s = cf + (k - kc) * (DT / dt if WINDOW == 'fixed' else dt / DT); h = int(hz[n]['horizon'])
+            sel = (s >= cf) & (s <= h)
+            o = medfilt3(ob)[sel]
+            obs_px = float(np.nanmax(np.abs(o - ob[i0]))) if np.isfinite(o).any() else float('nan')
+            frac, sb = boxes[n]; F = len(sb); sbv = sb * sa + sb_
+            hs = min(h, int(np.floor(np.nanmax(s)))) if SIM_TO_VIDEO else h
+            fr = [f for f in range(cf, min(hs, F - 1) + 1) if frac[f] >= ev.MIN_VIS]
+            sim_px = float(np.max(np.abs(sbv[fr] - sbv[cf]))) if fr and frac[cf] >= ev.MIN_VIS else float('nan')
+            best_px = float('nan')
+            if bbx is not None and n in bbx:
+                bfrac, bb = bbx[n]; bbv = bb * sa + sb_; bfr = [f for f in range(cf, min(hs, len(bb) - 1) + 1) if bfrac[f] >= ev.MIN_VIS]
+                if bfr and bfrac[cf] >= ev.MIN_VIS: best_px = float(np.max(np.abs(bbv[bfr] - bbv[cf])))
+            # motion onset (s after the condition frame): first frame moved > STATIC_PX (whole video for the observation)
+            mv = np.nanmax(np.abs(medfilt3(ob) - ob[i0]), 1) > STATIC_PX; ko = k[mv & (k >= kc)]
+            on_obs = float((ko.min() - kc) * DT) if len(ko) else None
+            fo = [f for f in fr if np.max(np.abs(sbv[f] - sbv[cf])) > STATIC_PX]
+            on_sim = float((fo[0] - cf) * dt) if fo and frac[cf] >= ev.MIN_VIS else None
+            per[n] = (round(obs_px, 1), round(sim_px, 1), on_obs, on_sim, round(best_px, 1))
+        if not per: continue
+        mo = max((v[0] for v in per.values() if np.isfinite(v[0])), default=float('nan'))
+        ms = max((v[1] for v in per.values() if np.isfinite(v[1])), default=float('nan'))
+        static = bool(np.isfinite(mo) and np.isfinite(ms) and mo < STATIC_PX and ms >= SHOULD_PX)
+        mb = max((v[4] for v in per.values() if np.isfinite(v[4])), default=float('nan'))
+        fo = [n for n in (r.get('objects') or list(per)) if n in per]   # F109: the objects the fit used
+        fob = max((per[n][0] for n in fo if np.isfinite(per[n][0])), default=float('nan')); fbe = max((per[n][4] for n in fo if np.isfinite(per[n][4])), default=float('nan'))
+        oo = [v[2] for v in per.values() if v[2] is not None]; os_ = [v[3] for v in per.values() if v[3] is not None]
+        out.append(dict(key=r['key'], model=r['model'], clip=clip, param=p, kind=r['kind'], kind_before_gate=r.get('kind_before_gate'),
+                        max_obs_px=mo, max_sim_px=ms, max_best_px=mb, fit_obs_px=fob, fit_best_px=fbe, static=static, onset_obs_s=min(oo) if oo else None, onset_sim_s=min(os_) if os_ else None,
+                        objects=per))
+    return out
+
+
+with get_context('fork').Pool(a.workers) as pool:
+    res = [o for xs in pool.map(run_clip, sorted(by_clip), chunksize=1) for o in xs]
+with open(ev.B / 'results_gen' / f'{a.name}_motion.jsonl', 'w') as f:
+    for o in res: f.write(json.dumps(o) + '\n')
+
+
+def table(group):
+    c = collections.defaultdict(collections.Counter)
+    for o in res:
+        if o['kind'] == 'not_validated': continue
+        g = group(o); c[g]['n'] += 1
+        if o['kind'] == 'not_explained':
+            c[g]['ne'] += 1; c[g]['ne_static'] += o['static']
+        else: c[g]['other_static'] += o['static']
+    for g, v in sorted(c.items()):
+        print(f"{g:28s} n={v['n']:5d} not_explained={v['ne'] / max(1, v['n']):.2f}  of which static={v['ne_static'] / max(1, v['ne']):.2f}  "
+              f"static among the other kinds={v['other_static'] / max(1, v['n'] - v['ne']):.2f}")
+
+
+AMP = (('hardly moves', 0, 0.25), ('moves too little', 0.25, 0.67), ('similar amount', 0.67, 1.5), ('moves too much', 1.5, float('inf')))
+
+
+def amplitude(group):
+    """'not explained' results by observed / prompted-simulation motion (prompted scene moves >= SHOULD_PX)"""
+    c = collections.defaultdict(collections.Counter)
+    for o in res:
+        if o['kind'] != 'not_explained' or not (np.isfinite(o['max_obs_px']) and np.isfinite(o['max_sim_px'])) or o['max_sim_px'] < SHOULD_PX: continue
+        q = o['max_obs_px'] / o['max_sim_px']; c[group(o)][next(lab for lab, lo, hi in AMP if lo <= q < hi)] += 1
+    print(f"{'':28s} " + '  '.join(f'{lab:>16s}' for lab, _, _ in AMP))
+    for g, v in sorted(c.items()):
+        n = sum(v.values()); print(f'{g:28s} ' + '  '.join(f'{v[lab] / n:16.2f}' for lab, _, _ in AMP) + f'   (n={n})')
+
+
+print('== per model'); table(lambda o: o['model'])
+print('== per task family'); table(lambda o: o['clip'][:3])
+print('== all'); table(lambda o: 'all')
+print('== not explained by motion amplitude (observed / prompted simulation), per model'); amplitude(lambda o: o['model'])
+print('== per task family'); amplitude(lambda o: o['clip'][:3])
+print('== all'); amplitude(lambda o: 'all')
+# onset: observed motion start minus the prompted simulation's (both > STATIC_PX), per task family; the evaluation allows +-20
+# reference frames of time shift
+print('== onset difference (observed - simulated, s), not explained vs other kinds')
+for fam in sorted({o['clip'][:3] for o in res}):
+    for lab, sel in (('not_explained', lambda o: o['kind'] == 'not_explained'), ('other', lambda o: o['kind'] not in ('not_explained', 'not_validated'))):
+        d = np.array([o['onset_obs_s'] - o['onset_sim_s'] for o in res if o['clip'][:3] == fam and sel(o) and o['onset_obs_s'] is not None and o['onset_sim_s'] is not None])
+        if len(d): print(f"{fam} {lab:14s} n={len(d):5d} median={np.median(d):+.2f}  |d|>0.67 s: {np.mean(np.abs(d) > 0.67):.2f}  |d|>1.5 s: {np.mean(np.abs(d) > 1.5):.2f}")
