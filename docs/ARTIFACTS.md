@@ -2,10 +2,11 @@
 
 | Artifact | Location | Status |
 |---|---|---|
-| Simulation videos, prompts, annotations, and 5,200 Core100 outputs | [PhysResponse dataset](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse) | Private release candidate |
-| Frozen Core100 pair judgments and expected scores | [Evaluation files](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse/tree/main/core100/evaluation) | Included in the dataset release candidate |
-| Full inversion evaluation base and tracking assets | Separate distribution | Public download awaits asset and license clearance |
+| Simulation videos, prompts, annotations, and 5,200 Core100 outputs | [PhysResponse dataset](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse) | Public dataset |
+| Frozen Core100 pair judgments and expected scores | [Evaluation files](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse/tree/main/core100/evaluation) | Public frozen judgments and expected scores |
+| Core100 inversion evaluation base | [Standard release](https://github.com/aliensco/PhysResponse/releases/tag/evaluation-base-standard-v1) | 50 parts and SHA-256 manifest. See the [download instructions](EVALUATE.md#parameter-inversion). |
+| SAM 3.1 tracker | [Source](https://github.com/facebookresearch/sam3) and [checkpoint](https://huggingface.co/facebook/sam3.1) | Obtain from the upstream providers under their access terms. |
 
-This source snapshot includes a CPU smoke-test fixture and no checkpoint. The last artifact is required to reproduce the full inversion experiment.
+This source snapshot includes a CPU smoke-test fixture and no checkpoint. GPU tracking uses the upstream checkpoint.
 
 Exact compact-prompt token counts require the [upstream SentencePiece vocabularies](../physedit/prompt_tokenizers/README.md).

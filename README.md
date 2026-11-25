@@ -56,7 +56,7 @@ python score_pairs.py --input evaluation-data/core100/evaluation/pair_endpoints.
 
 Expected output: `Verified 120 metric rows`. Each of the 51 registered pairs carries one unit of weight, shared equally across its events. PairAcc divides correct weight by decided weight. Coverage and VPSR divide decided and correct weight, respectively, by 51.
 
-**For parameter inversion**, the GPU pipeline additionally requires the Core100 evaluation base, SAM source, and checkpoint. This repository currently hosts the evaluator code. Consult the [evaluation instructions](docs/EVALUATE.md) and [asset availability](docs/ARTIFACTS.md) for the required inputs.
+**For parameter inversion**, the GPU pipeline additionally requires the Core100 evaluation base, SAM source, and checkpoint. Download the [Standard evaluation base](https://github.com/aliensco/PhysResponse/releases/tag/evaluation-base-standard-v1) from this repository’s Releases. Consult the [evaluation instructions](docs/EVALUATE.md) and [asset availability](docs/ARTIFACTS.md) for the required inputs.
 
 <details>
 <summary>CLI and unit tests</summary>
