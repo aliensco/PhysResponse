@@ -27,7 +27,7 @@ The dataset indexes use `standard` for the Standard prompt format. The scorer re
 
 ## Parameter inversion
 
-The full pipeline requires an unpacked Core100 evaluation base with reference videos, camera and scene bindings, and simulation libraries, plus an approved SAM source tree and checkpoint. See the [artifact statuses](ARTIFACTS.md) before running the example. GPU support is required for tracking.
+The full pipeline requires an unpacked Core100 evaluation base with reference videos, camera and scene bindings, and simulation libraries, plus an approved SAM source tree and checkpoint. See the [artifact statuses](ARTIFACTS.md) before running the example. GPU support is required for tracking. Use the evaluation base with Standard prompt names. Name Standard input clips `<clip_id>.standard.mp4`, for example `T03_C01.standard.mp4`.
 
 ```sh
 export PHYSPROBE_WORK=/path/to/phyresponse_eval

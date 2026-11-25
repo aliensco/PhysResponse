@@ -1,7 +1,7 @@
 """Prompt audit of one model: which compared pairs the model could not tell apart, so that they leave the concordant-pair shares.
 Cross-clip pairs (same group and scene, two clips whose prompted value of a parameter differs): 'unseen' if both videos are the
 same file, if the text the model sees is identical, or if a span where the two prompts differ and that carries the prompted value
-lies beyond the model's text limit on either side. Cross-group pairs (same clip, two of short / medium / detailed): 'unseen' if
+lies beyond the model's text limit on either side. Cross-group pairs (same clip, two of short / standard / detailed): 'unseen' if
 the videos are the same file or the visible texts are identical. The visible text is the prompt cut after the last token kept by
 the model's tokenizer (--tokenizer, a Hugging Face tokenizer folder, and --token-limit); without a tokenizer no text is cut.
 Prompted values: the library truths of the base (library_index.json).
@@ -78,9 +78,9 @@ for (m, g, task), rs in by.items():
                 excl_clip.append([x['key'], y['key'], p])
 by = collections.defaultdict(dict)
 for r in rows.values():
-    if r['group'] in ('short', 'medium', 'detailed'): by[(r['model'], r['clip'])][r['group']] = r
+    if r['group'] in ('short', 'standard', 'detailed'): by[(r['model'], r['clip'])][r['group']] = r
 for (m, c), d in by.items():
-    for g1, g2 in (('short', 'medium'), ('medium', 'detailed'), ('short', 'detailed')):
+    for g1, g2 in (('short', 'standard'), ('standard', 'detailed'), ('short', 'detailed')):
         if g1 not in d or g2 not in d: continue
         x, y = d[g1], d[g2]
         why = 'identical video' if x['sha'] and x['sha'] == y['sha'] else 'identical visible text' if x['text'][:x['cut']] == y['text'][:y['cut']] else None

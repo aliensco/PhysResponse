@@ -30,7 +30,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 STEPS = ['workspace', 'items', 'audit', 'track', 'camera', 'invert', 'motion', 'static', 'reference', 'gate', 'friction', 'view', 'compare', 'mu', 'visual', 'kinematics', 'table']
-GROUPS = ('short', 'medium', 'detailed', 'concat')
+GROUPS = ('short', 'standard', 'detailed', 'concat')
 
 
 def args():

@@ -36,7 +36,7 @@ a = ap.parse_args()
 MODELS = {'cogvideox_i2v': 'CogVideoX-1.5', 'cosmos': 'Cosmos-Predict2', 'cosmos3_nano': 'Cosmos3-Nano', 'hunyuan15_i2v': 'HunyuanVideo-1.5',
           'minimax_h3': 'MiniMax-H3', 'physalign_wan22_i2v_a14b': 'PhysAlign', 'physrvg_ti2v5b': 'PhysRVG', 'videogpa_ti2v5b': 'VideoGPA',
           'wan22_i2v_a14b': 'Wan2.2-I2V-A14B', 'wan_ti2v5b': 'Wan2.2-TI2V-5B'}
-GROUPS = ('short', 'medium', 'detailed', 'concat')
+GROUPS = ('short', 'standard', 'detailed', 'concat')
 OWN = json.load(open(a.owner)) if a.owner else {}
 def jl(f): return [json.loads(l) for l in open(f) if l.strip()] if os.path.exists(f) else []
 def med(x): return st.median(x) if x else None
@@ -91,7 +91,7 @@ RD = os.path.dirname(a.results) if a.results else None; RN = os.path.basename(a.
 AMP_OWN = amp_short([f'{RD}/{RN}_gated_motion.jsonl']) if RD else {}; AMP_REF = amp_short([f'{RD}/{RN}_ref_motion.jsonl']) if RD else {}
 STILL_OWN = still_set([f'{RD}/{RN}_gated_motion.jsonl']) if RD else set()
 EXJ = json.load(open(a.exclusions)) if a.exclusions and os.path.exists(a.exclusions) else dict(group_pairs=[], clip_pairs=[])
-DUP = {b for _, b in EXJ['group_pairs']}   # F110 A2: the second key of a pair of identical videos (medium kept)
+DUP = {b for _, b in EXJ['group_pairs']}   # F110 A2: the second key of a pair of identical videos (standard kept)
 TRUNC = {(k, q) for x, y, q in EXJ['clip_pairs'] for k in (x, y)}   # the prompt lost this parameter's value
 DUP_TASKS = {'T05_C04'}   # F115 (2026-11-11): the same task as T05_C03 (condition image, prompts and truths identical), counted once
 DROP = {c for c in a.drop_clips.split(',') if c} | DUP_TASKS
