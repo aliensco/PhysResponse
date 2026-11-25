@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="68" height="26" viewBox="0 0 68 26" role="img" aria-label="arXiv">
+  <rect x="0.5" y="0.5" width="67" height="25" rx="6.5" fill="#1f2937" stroke="#3b4a5f"/>
+  <g transform="translate(10 6.5) scale(0.5416666666666666)" fill="none" stroke="#cbd5e1" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h7l4.5 4.5V21h-11.5z"/><path d="M13.5 3v4.5H18"/><path d="M9.5 12.5h5M9.5 16h5"/></g>
+  <text x="42.8" y="17" text-anchor="middle" font-family="Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" letter-spacing="0.1">arXiv</text>
+</svg>

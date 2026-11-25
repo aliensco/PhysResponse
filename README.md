@@ -1,6 +1,31 @@
-# PhysResponse
+<div align="center">
+  <img src="docs/assets/physresponse-logo.png" width="420" alt="PhysResponse">
+  <h1>Probing the Physics of Video Generation<br>with Controlled Interventions</h1>
+  <p>
+    <a href="https://arxiv.org/abs/2611.24419"><img src="docs/assets/arxiv.svg" height="26" alt="arXiv"></a>
+    <a href="https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse"><img src="docs/assets/data.svg" height="26" alt="Hugging Face dataset"></a>
+    &nbsp;·&nbsp; <a href="#install">Quickstart</a>
+    &nbsp;·&nbsp; <a href="#evaluate">Evaluation</a>
+  </p>
+  <p>
+    <img src="docs/assets/sysu.png" height="42" alt="Sun Yat-sen University">
+    &nbsp;&nbsp;
+    <img src="docs/assets/mbzuai.png" height="42" alt="Mohamed bin Zayed University of Artificial Intelligence">
+    &nbsp;&nbsp;
+    <img src="docs/assets/hkust.png" height="42" alt="The Hong Kong University of Science and Technology">
+  </p>
+</div>
 
-Research code for **PhysResponse: Probing the Physics of Video Generation with Controlled Interventions**. The benchmark evaluates physical parameters inferred from motion and event outcomes under controlled interventions.
+PhysResponse tests how video generators respond to controlled changes in gravity, friction, and initial speed. The benchmark recovers effective physical parameters from generated motion and checks event outcomes on either side of a critical transition.
+
+| Simulation videos | Interaction types | Prompt bindings | Core100 cases |
+| :---: | :---: | :---: | :---: |
+| **72,000** | **20** | **288,000** | **100** |
+
+<p align="center">
+  <img src="docs/assets/t09_boundary.jpg" width="740" alt="Core100 reference frames showing distinct book-stack outcomes under two gravity levels">
+  <br><em>Core100 reference cases T09_C02 and T09_C03. The upper book stays on the stack at 3.71 m/s² and lands on the table at 9.81 m/s².</em>
+</p>
 
 ## Install
 
