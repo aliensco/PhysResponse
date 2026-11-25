@@ -3,11 +3,11 @@
   <h1>Probing the Physics of Video Generation<br>with Controlled Interventions</h1>
   <p><strong><a href="https://aliensco.github.io/PhysResponse-homepage/">Project page</a> &nbsp; · &nbsp; <a href="https://aliensco.github.io/PhysResponse-homepage/#video">Video</a> &nbsp; · &nbsp; <a href="https://arxiv.org/abs/2611.24419">Paper</a> &nbsp; · &nbsp; <a href="https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse">Dataset</a> &nbsp; · &nbsp; <a href="#reproduce-the-pair-scores">Quickstart</a></strong></p>
   <p>
-    <img src="docs/assets/sysu.png" height="42" alt="Sun Yat-sen University">
+    <img src="docs/assets/sysu.png" width="27%" alt="Sun Yat-sen University">
     &nbsp;&nbsp;
-    <img src="docs/assets/mbzuai.png" height="42" alt="Mohamed bin Zayed University of Artificial Intelligence">
+    <img src="docs/assets/mbzuai.png" width="28%" alt="Mohamed bin Zayed University of Artificial Intelligence">
     &nbsp;&nbsp;
-    <img src="docs/assets/hkust.png" height="42" alt="The Hong Kong University of Science and Technology">
+    <img src="docs/assets/hkust.png" width="25%" alt="The Hong Kong University of Science and Technology">
   </p>
 </div>
 
@@ -17,11 +17,9 @@ If we change only gravity, will a book stay on the stack or fall to the table? P
 
 ## The benchmark
 
-| Simulation videos | Interaction types | Prompt bindings | Core100 cases | Public model outputs |
-|:---:|:---:|:---:|:---:|:---:|
-| **72,000** | **20** | **288,000** | **100** | **5,200** |
+<p align="center"><img src="docs/assets/stats.gif" width="100%" alt="24,000 simulation runs across 20 interaction types yield 72,000 videos and 288,000 prompt records."></p>
 
-Core100 evaluates ten base models on 100 cases with four prompt formats (Short, Standard, Detailed, and Concat). The public generation catalog also includes fine-tuned variants. Browse the [video and prompt catalog](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse) or explore [matched examples on the project page](https://aliensco.github.io/PhysResponse-homepage/#qualitative).
+Core100 evaluates ten base models on 100 cases with four prompt formats (Short, Standard, Detailed, and Concat). The public generation catalog contains 5,200 outputs across base models and fine-tuned variants. Browse the [video and prompt catalog](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse) or explore [matched examples on the project page](https://aliensco.github.io/PhysResponse-homepage/#qualitative).
 
 ## One intervention, two outcomes
 
@@ -31,6 +29,8 @@ In Core100 cases T09_C02 and T09_C03, the upper book stays supported at **3.71 m
 
 - **Parameter inversion.** What value of gravity, friction, or initial speed best explains the tracked motion?
 - **Critical-event response.** Does the generated video reproduce the reference event on each side of the transition? NearAcc and FarAcc report class-balanced accuracy using the benchmark’s 20% distance cutoff. PairAcc credits a paired event when both endpoints match their references.
+
+<p align="center"><img src="docs/assets/inversion.gif" width="100%" alt="Animated illustration of image-plane trajectory fitting, depth lifting, and simulator inversion."></p>
 
 ## Fine-tuning results
 
