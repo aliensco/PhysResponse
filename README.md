@@ -1,7 +1,7 @@
 <div align="center">
   <img src="docs/assets/physresponse-logo.png" width="420" alt="PhysResponse">
   <h1>Probing the Physics of Video Generation<br>with Controlled Interventions</h1>
-  <p><strong><a href="https://aliensco.github.io/PhysResponse-homepage/">Project page</a> &nbsp; · &nbsp; <a href="https://aliensco.github.io/PhysResponse-homepage/#video">Video</a> &nbsp; · &nbsp; <a href="https://arxiv.org/abs/2611.24419">Paper</a> &nbsp; · &nbsp; <a href="https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse">Dataset</a> &nbsp; · &nbsp; <a href="#reproduce-the-pair-scores">Quickstart</a></strong></p>
+  <p><strong><a href="https://aliensco.github.io/PhysResponse-homepage/">Project page</a> &nbsp; · &nbsp; <a href="https://aliensco.github.io/PhysResponse-homepage/#video">Video</a> &nbsp; · &nbsp; <a href="https://arxiv.org/abs/2611.24419">Paper</a> &nbsp; · &nbsp; <a href="https://huggingface.co/datasets/aliensco2025/PhysResponse">Dataset</a> &nbsp; · &nbsp; <a href="#reproduce-the-pair-scores">Quickstart</a></strong></p>
   <p>
     <img src="docs/assets/sysu.png" width="27%" alt="Sun Yat-sen University">
     &nbsp;&nbsp;
@@ -19,7 +19,7 @@ If we change only gravity, will a book stay on the stack or fall to the table? P
 
 <p align="center"><img src="docs/assets/stats.gif" width="100%" alt="24,000 simulation runs across 20 interaction types yield 72,000 videos and 288,000 prompt records."></p>
 
-Core100 evaluates ten base models on 100 cases with four prompt formats (Short, Standard, Detailed, and Concat). The public generation catalog contains 5,200 outputs across base models and fine-tuned variants. Browse the [video and prompt catalog](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse) or explore [matched examples on the project page](https://aliensco.github.io/PhysResponse-homepage/#qualitative).
+Core100 evaluates ten base models on 100 cases with four prompt formats (Short, Standard, Detailed, and Concat). The public generation catalog contains 5,200 outputs across base models and fine-tuned variants. Browse the [video and prompt catalog](https://huggingface.co/datasets/aliensco2025/PhysResponse) or explore [matched examples on the project page](https://aliensco.github.io/PhysResponse-homepage/#qualitative).
 
 ## One intervention, two outcomes
 
@@ -50,7 +50,7 @@ From the repository root, use Python 3.12 in a virtual environment. The commands
 
 ```sh
 python -m pip install . huggingface_hub
-hf download SunYat-senUniversity/PhysResponse core100/evaluation/pair_endpoints.jsonl.gz core100/evaluation/expected_pair_scores.csv --repo-type dataset --revision 4ae64ba4b52434715733fe2b43836919b0f023e9 --local-dir evaluation-data
+hf download aliensco2025/PhysResponse core100/evaluation/pair_endpoints.jsonl.gz core100/evaluation/expected_pair_scores.csv --repo-type dataset --revision 4ae64ba4b52434715733fe2b43836919b0f023e9 --local-dir evaluation-data
 python score_pairs.py --input evaluation-data/core100/evaluation/pair_endpoints.jsonl.gz --expected evaluation-data/core100/evaluation/expected_pair_scores.csv --output scores.csv
 ```
 
@@ -88,4 +88,4 @@ python -m pytest -q
 }
 ```
 
-The code is available under the [MIT License](LICENSE). Project-owned simulation data, prompts, and annotations use CC BY-NC 4.0. Third-party material follows its applicable terms. See the [dataset license and distribution scope](https://huggingface.co/datasets/SunYat-senUniversity/PhysResponse#access-and-licensing).
+The code is available under the [MIT License](LICENSE). Project-owned simulation data, prompts, and annotations use CC BY-NC 4.0. Third-party material follows its applicable terms. See the [dataset license and distribution scope](https://huggingface.co/datasets/aliensco2025/PhysResponse#access-and-licensing).
